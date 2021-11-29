@@ -18,7 +18,7 @@ public class Inventory extends RouteBuilder {
     public BasicDataSource datasoure() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://postgresql:5432/example");
+        dataSource.setUrl("jdbc:postgresql://database:5432/example");
         dataSource.setUsername("user");
         dataSource.setPassword("password");
         return dataSource;
