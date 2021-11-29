@@ -1,0 +1,88 @@
+apiVersion: admin.enmasse.io/v1beta2
+kind: AddressPlan
+metadata:
+  labels:
+    app: enmasse
+  name: standard-small-anycast
+  namespace: openshift-operators
+spec:
+  addressType: anycast
+  displayName: Small Anycast
+  displayOrder: 0
+  longDescription: >-
+    Creates a small anycast address where messages go via a router that does not
+    take ownership of the messages.
+  resources:
+    router: 0.001
+  shortDescription: Creates a small anycast address.
+---
+apiVersion: admin.enmasse.io/v1beta2
+kind: AddressPlan
+metadata:
+  labels:
+    app: enmasse
+  name: standard-small-multicast
+  namespace: openshift-operators
+spec:
+  addressType: multicast
+  displayName: Small Multicast
+  displayOrder: 0
+  longDescription: >-
+    Creates a small multicast address where messages go via a router that does
+    not take ownership of the messages.
+  resources:
+    router: 0.001
+  shortDescription: Creates a small multicast address.
+---
+apiVersion: admin.enmasse.io/v1beta2
+kind: AddressPlan
+metadata:
+  labels:
+    app: enmasse
+  name: standard-small-queue
+  namespace: openshift-operators
+spec:
+  addressType: queue
+  displayName: Small Queue
+  displayOrder: 0
+  longDescription: Creates a small queue sharing underlying broker with other queues.
+  resources:
+    broker: 0.01
+    router: 0.001
+  shortDescription: Creates a small queue sharing underlying broker with other queues.
+---
+apiVersion: admin.enmasse.io/v1beta2
+kind: AddressPlan
+metadata:
+  labels:
+    app: enmasse
+  name: standard-small-subscription
+  namespace: openshift-operators
+spec:
+  addressType: subscription
+  displayName: Small Subscription
+  displayOrder: 0
+  longDescription: >-
+    Creates a small durable subscription on a topic, which is then accessed as a
+    distinct address.
+  resources:
+    broker: 0.01
+    router: 0.001
+  shortDescription: Creates a small durable subscription on a topic.
+---
+apiVersion: admin.enmasse.io/v1beta2
+kind: AddressPlan
+metadata:
+  labels:
+    app: enmasse
+  name: standard-small-topic
+  namespace: openshift-operators
+spec:
+  addressType: topic
+  displayName: Small Topic
+  displayOrder: 0
+  longDescription: Creates a small topic sharing underlying broker with other topics.
+  resources:
+    broker: 0.01
+    router: 0.001
+  shortDescription: Creates a small topic sharing underlying broker with other topics.

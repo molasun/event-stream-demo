@@ -1,0 +1,30 @@
+apiVersion: admin.enmasse.io/v1beta2
+kind: AddressSpacePlan
+metadata:
+  labels:
+    app: enmasse
+  name: standard-small
+  namespace: event-stream-project
+spec:
+  addressPlans:
+    - standard-small-anycast
+    - standard-small-multicast
+    - standard-small-queue
+    - standard-small-topic
+    - standard-small-subscription
+  addressSpaceType: standard
+  displayName: Small
+  displayOrder: 0
+  infraConfigRef: default-minimal
+  longDescription: >-
+    Messaging infrastructure based on Apache Qpid Dispatch Router and Apache
+    ActiveMQ Artemis. This plan allows up to 1 router and 1 broker in total, and
+    is suitable for small applications using small address plans and few
+    addresses.
+  resourceLimits:
+    aggregate: 2
+    broker: 1
+    router: 1
+  shortDescription: >-
+    Messaging infrastructure based on Apache Qpid Dispatch Router and Apache
+    ActiveMQ Artemis

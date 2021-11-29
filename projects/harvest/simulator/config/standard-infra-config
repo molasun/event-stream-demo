@@ -1,0 +1,21 @@
+apiVersion: admin.enmasse.io/v1beta1
+kind: StandardInfraConfig
+metadata:
+  labels:
+    app: enmasse
+  name: default-minimal
+  namespace: event-stream-project
+spec:
+  admin:
+    resources:
+      memory: 512Mi
+  broker:
+    addressFullPolicy: FAIL
+    resources:
+      memory: 512Mi
+      storage: 2Gi
+  router:
+    linkCapacity: 250
+    minReplicas: 1
+    resources:
+      memory: 512Mi

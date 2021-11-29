@@ -1,0 +1,10 @@
+apiVersion: admin.enmasse.io/v1beta1
+kind: AuthenticationService
+metadata:
+  name: none-authservice
+  namespace: event-stream-project
+spec:
+  none:
+    certificateSecret:
+      name: none-authservice-cert
+  type: none
