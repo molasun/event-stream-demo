@@ -32,7 +32,6 @@ public class PremiumShipping extends RouteBuilder {
                 .method(this, "assignShipment(${body}, ${header.marshmallow})").log("${body}").to("infinispan:default")
 
         ;
-
     }
 
     public Map assignShipment(Map<Integer, List<Map>> premiumShipment, Map marshmallow) {
