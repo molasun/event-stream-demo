@@ -8,7 +8,7 @@ data:
 
     consumer.group=premium
     camel.component.kafka.brokers=stream-cluster-kafka-bootstrap.event-stream-project.svc:9092
-    camel.component.infinispan.configuration.hosts=example-infinispan:11222
+    camel.component.infinispan.configuration.hosts=example-infinispan.event-stream-project.svc:11222
     camel.component.infinispan.configuration.configurationUri=client.properties
   client.properties: |2+
     infinispan.client.hotrod.use_auth=true
