@@ -35,7 +35,7 @@ public class Inventory extends RouteBuilder {
                 .log("Standard ${body}").wireTap("direct:standardDB").newExchangeHeader("quality", constant("Standard"))
                 .newExchangeHeader("weight", jsonpath("$.weight")).end().marshal().json()
                 .to("kafka:standard?groupId=sender").otherwise().log("Utility ${body}").marshal().json()
-                .to("kafka:tility?groupId=sender").end();
+                .to("kafka:utility?groupId=sender").end();
 
         from("direct:premiumDB").log("inventoryDa stored ${headers.quality} diameter ${headers.diameter}").setBody(
                 simple("insert into premium (mmid,diameter,weight) VALUES (${headers.mmid},${headers.diameter},${headers.weight} )"))
