@@ -18,7 +18,7 @@ public class Inventory extends RouteBuilder {
     public BasicDataSource datasoure() {
         BasicDataSource dataSource = new BasicDataSource();
         dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://postgresql:5432/sampledb");
+        dataSource.setUrl("jdbc:postgresql://postgresql:5432/example");
         dataSource.setUsername("user");
         dataSource.setPassword("password");
         return dataSource;
@@ -31,11 +31,18 @@ public class Inventory extends RouteBuilder {
                 .jsonpath("$[?(@.diameter > 4 )]").log("Premium ${body}").wireTap("direct:premiumDB")
                 .newExchangeHeader("quality", constant("Premium")).newExchangeHeader("diameter", jsonpath("$.diameter"))
                 .newExchangeHeader("weight", jsonpath("$.weight")).newExchangeHeader("mmid", jsonpath("$.mmid")).end()
-                .marshal().json().to("kafka:user1-premium?groupId=sender").when().jsonpath("$[?(@.diameter > 1 )]")
+                .marshal().json().to("kafka:premium?groupId=sender").when().jsonpath("$[?(@.diameter > 1 )]")
                 .log("Standard ${body}").wireTap("direct:standardDB").newExchangeHeader("quality", constant("Standard"))
                 .newExchangeHeader("weight", jsonpath("$.weight")).end().marshal().json()
-                .to("kafka:user1-standard?groupId=sender").otherwise().log("Utility ${body}").marshal().json()
-                .to("kafka:user1-utility?groupId=sender").end();
+                .to("kafka:standard?groupId=sender").otherwise().log("Utility ${body}").marshal().json()
+                .to("kafka:tility?groupId=sender").end();
+
+        from("direct:premiumDB").log("inventoryDa stored ${headers.quality} diameter ${headers.diameter}").setBody(
+                simple("insert into premium (mmid,diameter,weight) VALUES (${headers.mmid},${headers.diameter},${headers.weight} )"))
+                .to("jdbc:dataSource");
+
+        from("direct:standardDB").log("inventoryDa stored ${headers.quality}")
+                .setBody(simple("insert into standard (weight) VALUES (${headers.weight})")).to("jdbc:dataSource");
 
     }
 
