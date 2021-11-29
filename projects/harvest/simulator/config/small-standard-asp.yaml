@@ -4,7 +4,7 @@ metadata:
   labels:
     app: enmasse
   name: standard-small
-  namespace: event-stream-project
+  namespace: openshift-operators
 spec:
   addressPlans:
     - standard-small-anycast
