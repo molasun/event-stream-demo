@@ -4,7 +4,7 @@ metadata:
   name: premiumshipping-config
 data:
   kafka.properties: |2+
-    consumer.group=premium
+    consumer.group=premium-shipping
     camel.component.kafka.brokers=stream-cluster-kafka-bootstrap.event-stream-project.svc:9092
     camel.component.infinispan.configuration.hosts=example-infinispan.event-stream-project.svc:11222
     camel.component.infinispan.configuration.configurationUri=client.properties
