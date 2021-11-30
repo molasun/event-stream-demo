@@ -4,8 +4,6 @@ metadata:
   name: premiumshipping-config
 data:
   kafka.properties: |2+
-    camel.main.autowired-enabled=false
-
     consumer.group=premium
     camel.component.kafka.brokers=stream-cluster-kafka-bootstrap.event-stream-project.svc:9092
     camel.component.infinispan.configuration.hosts=example-infinispan.event-stream-project.svc:11222
