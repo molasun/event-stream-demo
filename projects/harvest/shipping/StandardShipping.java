@@ -26,16 +26,22 @@ public class StandardShipping extends RouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        from("timer:cleanup?repeatCount=1").setHeader(InfinispanConstants.OPERATION).constant(InfinispanOperation.CLEAR)
-                .setHeader(InfinispanConstants.KEY).constant("standard").to("infinispan:default");
+        from("timer:cleanup?repeatCount=1")
+                .setHeader(InfinispanConstants.OPERATION).constant(InfinispanOperation.CLEAR)
+                .setHeader(InfinispanConstants.KEY).constant("standard")
+                .to("infinispan:default");
 
         // USE API
-        from("kafka:standard?groupId=standard-shipping").setHeader("marshmallow").simple("${body}")
+        from("kafka:standard?groupId=standard-shipping")
+                .setHeader("marshmallow").simple("${body}")
                 .setHeader(InfinispanConstants.OPERATION).constant(InfinispanOperation.GET)
-                .setHeader(InfinispanConstants.KEY).constant("standard").to("infinispan:default")
+                .setHeader(InfinispanConstants.KEY).constant("standard")
+                .to("infinispan:default")
                 .setHeader(InfinispanConstants.OPERATION).constant(InfinispanOperation.PUT)
-                .setHeader(InfinispanConstants.KEY).constant("standard").setHeader(InfinispanConstants.VALUE)
-                .method(this, "assignShipment(${body})").log("${body}").to("infinispan:default")
+                .setHeader(InfinispanConstants.KEY).constant("standard")
+                .setHeader(InfinispanConstants.VALUE).method(this, "assignShipment(${body})")
+                .log("${body}")
+                .to("infinispan:default")
 
         ;
     }

@@ -20,16 +20,24 @@ public class PremiumShipping extends RouteBuilder {
     @Override
     public void configure() throws Exception {
 
-        from("timer:cleanup?repeatCount=1").setHeader(InfinispanConstants.OPERATION).constant(InfinispanOperation.CLEAR)
-                .setHeader(InfinispanConstants.KEY).constant("premium").to("infinispan:default");
+        from("timer:cleanup?repeatCount=1")
+                .setHeader(InfinispanConstants.OPERATION).constant(InfinispanOperation.CLEAR)
+                .setHeader(InfinispanConstants.KEY).constant("premium")
+                .to("infinispan:default");
 
-        from("kafka:premium?groupId=premium-shipping").streamCaching().unmarshal(new JacksonDataFormat(Map.class))
-                .log("Input --> ${body}").setHeader("marshmallow").simple("${body}")
+        from("kafka:premium?groupId=premium-shipping")
+                .streamCaching()
+                .unmarshal(new JacksonDataFormat(Map.class))
+                .log("Input --> ${body}")
+                .setHeader("marshmallow").simple("${body}")
                 .setHeader(InfinispanConstants.OPERATION).constant(InfinispanOperation.GET)
-                .setHeader(InfinispanConstants.KEY).constant("premium").to("infinispan:default")
+                .setHeader(InfinispanConstants.KEY).constant("premium")
+                .to("infinispan:default")
                 .setHeader(InfinispanConstants.OPERATION).constant(InfinispanOperation.PUT)
-                .setHeader(InfinispanConstants.KEY).constant("premium").setHeader(InfinispanConstants.VALUE)
-                .method(this, "assignShipment(${body}, ${header.marshmallow})").log("${body}").to("infinispan:default")
+                .setHeader(InfinispanConstants.KEY).constant("premium")
+                .setHeader(InfinispanConstants.VALUE).method(this, "assignShipment(${body}, ${header.marshmallow})")
+                .log("${body}")
+                .to("infinispan:default")
 
         ;
     }
