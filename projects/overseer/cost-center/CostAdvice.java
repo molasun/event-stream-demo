@@ -12,13 +12,13 @@ public class CostAdvice extends RouteBuilder {
 
     static Map<Integer, Double> COST_FACTOR = new HashMap<Integer, Double>();
     static {
-        COST_FACTOR.put(101, 8.0);
-        COST_FACTOR.put(302, 5.4);
-        COST_FACTOR.put(787, 7.9);
-        COST_FACTOR.put(645, 8.7);
-        COST_FACTOR.put(555, 8.7);
-        COST_FACTOR.put(460, 7.6);
-        COST_FACTOR.put(892, 7.5);
+        COST_FACTOR.put(101, 10.0);
+        COST_FACTOR.put(302, 20.0);
+        COST_FACTOR.put(787, 10.0);
+        COST_FACTOR.put(645, 15.0);
+        COST_FACTOR.put(555, 10.0);
+        COST_FACTOR.put(460, 10.0);
+        COST_FACTOR.put(892, 10.0);
     }
 
     Map<Integer, Double> farmCost = new HashMap<Integer, Double>();
