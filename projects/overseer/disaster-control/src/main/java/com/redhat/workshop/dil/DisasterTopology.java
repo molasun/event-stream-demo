@@ -1,4 +1,5 @@
 package com.redhat.workshop.dil;
+
 import com.redhat.workshop.util.JsonPOJODeserializer;
 import com.redhat.workshop.util.JsonPOJOSerializer;
 
@@ -25,7 +26,6 @@ import org.apache.kafka.streams.kstream.Produced;
 import java.util.Map;
 import java.util.HashMap;
 
-
 import javax.inject.Inject;
 
 import org.kie.kogito.rules.RuleUnit;
@@ -34,20 +34,19 @@ import org.kie.kogito.rules.RuleUnitInstance;
 import java.time.Duration;
 
 @ApplicationScoped
-public class DisasterTopology{ 
+public class DisasterTopology {
 
     private static final String HARVEST_EVENT_TOPIC = "costcenter";
     private static final String DISASTER_EVENT_TOPIC = "disaster";
-    private static final int DISASTER_HARVEST_INTERVAL=10;
+    private static final int DISASTER_HARVEST_INTERVAL = 10;
 
     @Inject
     RuleUnit<DisasterUnit> alertRuleUnit;
 
-
     @Produces
     public Topology monitor() {
 
-        //Setup POJO Serializer for Harvest Event
+        // Setup POJO Serializer for Harvest Event
         Map<String, Object> serdeProps = new HashMap<>();
         final Serializer<HarvestEvent> harvestEventSerializer = new JsonPOJOSerializer<>();
         serdeProps.put("JsonPOJOClass", HarvestEvent.class);
@@ -57,9 +56,10 @@ public class DisasterTopology{
         serdeProps.put("JsonPOJOClass", HarvestEvent.class);
         harvestEventDeserializer.configure(serdeProps, false);
 
-        final Serde<HarvestEvent> harvestEventSerde = Serdes.serdeFrom(harvestEventSerializer, harvestEventDeserializer);
+        final Serde<HarvestEvent> harvestEventSerde = Serdes.serdeFrom(harvestEventSerializer,
+                harvestEventDeserializer);
 
-        //Setup POJO Serializer for Harvest Event
+        // Setup POJO Serializer for Harvest Event
         final Serializer<HarvestinFive> harvestinFiveSerializer = new JsonPOJOSerializer<>();
         serdeProps.put("JsonPOJOClass", HarvestinFive.class);
         harvestinFiveSerializer.configure(serdeProps, false);
@@ -68,21 +68,51 @@ public class DisasterTopology{
         serdeProps.put("JsonPOJOClass", HarvestinFive.class);
         harvestinFiveDeserializer.configure(serdeProps, false);
 
-        final Serde<HarvestinFive> harvestinFiveSerde = Serdes.serdeFrom(harvestinFiveSerializer, harvestinFiveDeserializer);
+        final Serde<HarvestinFive> harvestinFiveSerde = Serdes.serdeFrom(harvestinFiveSerializer,
+                harvestinFiveDeserializer);
 
-        //Setup Drools RuleUnit 
+        // Setup Drools RuleUnit
         DisasterUnit disasterUnit = new DisasterUnit();
         RuleUnitInstance<DisasterUnit> alertsvcInstance = alertRuleUnit.createInstance(disasterUnit);
 
+        // Build Topology to get harvest Info//
+        StreamsBuilder builder = new StreamsBuilder();
 
-        //Build Topology to get harvest Info//
-        
+        KStream<Windowed<Long>, Integer> windowedharvestcnt = builder.stream(
+                HARVEST_EVENT_TOPIC, /* input topic */
+                Consumed.with(
+                        Serdes.String(), /* key serde */
+                        harvestEventSerde /* value serde */
+                ))
+                .peek((key, value) -> System.out.println("Before key=" + key + ", value=" + value))
+                .map((key, value) -> KeyValue.pair(value.getBatchtime(), value.getBatchcnt()))
+                .groupByKey(
+                        Grouped.with(
+                                Serdes.Long(), /* key */
+                                Serdes.Integer() /* value */
+                        ))
+                .windowedBy(TimeWindows.of(Duration.ofSeconds(DISASTER_HARVEST_INTERVAL)))
+                .aggregate(
+                        () -> 0, /* initializer */
+                        (aggKey, newValue, aggValue) -> aggValue + newValue,
+                        Materialized.with(Serdes.Long(), Serdes.Integer()))
+                .toStream()
+                .peek((key, value) -> System.out.println("After key=" + key + ", value=" + value));
 
-        //Pass data into Rules//
-        
-        
-       
-        //harvestEventStreams.foreach((key, value) -> System.out.println(key + " => " + value));
+        // Pass data into Rules//
+        windowedharvestcnt.map(
+                (key, value) -> {
+                    HarvestinFive hin5 = new HarvestinFive();
+                    hin5.setTotalCnt(value);
+                    disasterUnit.getEventStream().append(hin5);
+                    alertsvcInstance.fire();
+                    return new KeyValue<>(key.key(), hin5);
+                })
+                .peek((key, value) -> System.out.println("Result key=" + key + ", value=" + value))
+                .to(DISASTER_EVENT_TOPIC, Produced.with(Serdes.Long(), harvestinFiveSerde));
+
+        // harvestEventStreams.foreach((key, value) -> System.out.println(key + " => " +
+        // value));
         return builder.build();
 
     }
